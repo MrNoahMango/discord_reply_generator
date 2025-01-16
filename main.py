@@ -1,126 +1,126 @@
+from PySide6.QtCore import *
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
-
-app = QApplication([])
-
-window = QMainWindow()
-window.setWindowTitle("Reply Creator")
-
-main_widget = QWidget()
-main_layout = QHBoxLayout()
 
 
-def update_markdown():
-    author = author_field.text()
-    author_id = author_id_field.text()
-    reply_ping = ping_button.isChecked()
-    replied_message_text = replied_message_text_field.toPlainText()
-    replied_message_link = message_link_field.text()
-    message_link_list = replied_message_link.split('/')
-    message_text = message_text_field.toPlainText()
+class ReplyGenerator(QWidget):
+    def __init__(self):
+        super().__init__()
 
-    if author or reply_ping:
-        if reply_ping:
-            author = f"<@{author_id}>"
+        # set up the window
+        self.setWindowTitle("Reply Generator")
+
+        # author details
+        self.author = self.create_line_edit("Reply Author:")
+        self.author_id = self.create_line_edit("Reply Author ID:")
+
+        # reply ping button
+        self.reply_ping = QPushButton("Reply\nPing")
+        self.reply_ping.clicked.connect(self.update_preview)
+        self.reply_ping.setCheckable(True)
+        self.reply_ping.setMaximumSize(100, 100)
+
+        # message link
+        self.message_link = self.create_line_edit("Link to replied message:")
+
+        # replied message text
+        self.reply_text = self.create_text_edit("Replied text:")
+
+        # message text
+        self.message_text = self.create_text_edit("Your reply:")
+
+        # preview
+        self.preview = QTextBrowser()
+        self.copy = QPushButton("Copy")
+        self.copy.pressed.connect(self.copy_handler)
+
+        # layouts
+        self.main_layout = QHBoxLayout()
+        self.preview_layout = QVBoxLayout()
+        self.input_layout = QVBoxLayout()
+        self.author_layout = QHBoxLayout()
+        self.author_info_layout = QVBoxLayout()
+
+        # set size and alignment
+        self.author_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.author_layout.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+
+        # fill author info layout
+        self.author_info_layout.addWidget(self.author)
+        self.author_info_layout.addWidget(self.author_id)
+
+        # fill author layout
+        self.author_layout.addLayout(self.author_info_layout)
+        self.author_layout.addWidget(self.reply_ping)
+
+        # fill input layout
+        self.input_layout.addLayout(self.author_layout)
+        self.input_layout.addWidget(self.message_link)
+        self.input_layout.addWidget(self.reply_text)
+        self.input_layout.addWidget(self.message_text)
+
+        # fill preview layout
+        self.preview_layout.addWidget(self.preview)
+        self.preview_layout.addWidget(self.copy)
+
+        # fill main layout
+        self.main_layout.addLayout(self.input_layout)
+        self.main_layout.addLayout(self.preview_layout)
+
+        # set main layout
+        self.setLayout(self.main_layout)
+
+    def update_preview(self):
+        author = ''
+        link_components = self.message_text.text().split('/')
+
+        if self.author.text() or self.author_id.text():
+            if self.reply_ping.isChecked() and self.author_id.text():
+                author = f"<@{self.author_id.text()}>"
+            else:
+                author = f"{self.author.text}"
+
+            if self.message_link.text():
+                author = f"{self.author.text} in <#{link_components[5]}>"
+
+        if self.message_link.text():
+            reply_to_text = f"[Reply to:](<{self.message_link.text()}>)"
         else:
-            author = f"{author}"
+            reply_to_text = "Reply to:"
 
-        if replied_message_link:
-            author = f"{author} in <#{message_link_list[5]}>"
+        self.preview.setPlainText(f"-# > {reply_to_text} {author}\n"
+                                  f"> {self.reply_text.text()}\n"
+                                  f"_ _\n"
+                                  f"{self.message_text.text()}")
 
-    if replied_message_link:
-        reply_to_text = f"[Reply to:](<{replied_message_link}>)"
-    else:
-        reply_to_text = "Reply to:"
+    def copy_handler(self):
+        clipboard = QApplication.clipboard()
+        clipboard.setText("temp")
 
-    reply_text = (f"-# > {reply_to_text} {author}\n"
-                  f"> {replied_message_text}\n"
-                  f"_ _\n"
-                  f"{message_text}")
+        self.copy.setText("Copied to clipboard!")
+        QTimer.singleShot(2000, lambda: self.copy.setText("Copy"))
 
-    preview_text_browser.setPlainText(reply_text)
+    def create_line_edit(self, placeholder):
+        line_edit = QLineEdit()
+        line_edit.setPlaceholderText(placeholder)
+        line_edit.setMinimumWidth(150)
+        line_edit.textChanged.connect(self.update_preview)
+        return line_edit
+
+    def create_text_edit(self, placeholder):
+        text_edit = QLineEdit()
+        text_edit.setPlaceholderText(placeholder)
+        text_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        text_edit.textChanged.connect(self.update_preview)
+        return text_edit
 
 
-def copy_to_clipboard():
-    clipboard = QApplication.clipboard()
-    clipboard.setText(preview_text_browser.toPlainText())
+def main():
+    app = QApplication([])
+    window = ReplyGenerator()  # Create an instance of MyWindow
+    window.update_preview()
+    window.show()  # Show the window
+    app.exec()  # Start the application's event loop
 
 
-# region Message Info
-
-# region Replied Message Info
-
-replied_message_info_layout = QVBoxLayout()
-
-# region Author Info
-
-author_layout = QHBoxLayout()
-
-author_info_layout = QVBoxLayout()
-author_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-author_field = QLineEdit()
-author_field.setPlaceholderText("Author:")
-author_field.textEdited.connect(update_markdown)
-
-author_id_field = QLineEdit()
-author_id_field.setPlaceholderText("Author ID:")
-author_id_field.textEdited.connect(update_markdown)
-
-author_info_layout.addWidget(author_field)
-author_info_layout.addWidget(author_id_field)
-
-author_layout.addLayout(author_info_layout)
-
-ping_button = QPushButton("Reply\nPing")
-ping_button.setCheckable(True)
-ping_button.setMaximumSize(48, 48)
-ping_button.setMinimumSize(48, 48)
-ping_button.toggled.connect(update_markdown)
-
-author_layout.addWidget(ping_button)
-author_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-replied_message_info_layout.addLayout(author_layout)
-
-# endregion Author Info
-
-replied_message_text_field = QTextEdit()
-replied_message_text_field.setPlaceholderText("Replied message text:")
-replied_message_text_field.setMinimumHeight(48)
-replied_message_text_field.textChanged.connect(update_markdown)
-replied_message_info_layout.addWidget(replied_message_text_field)
-
-message_link_field = QLineEdit()
-message_link_field.setPlaceholderText("Link to replied message:")
-message_link_field.textChanged.connect(update_markdown)
-replied_message_info_layout.addWidget(message_link_field)
-
-message_text_field = QTextEdit()
-message_text_field.setPlaceholderText("Your reply:")
-message_text_field.textChanged.connect(update_markdown)
-replied_message_info_layout.addWidget(message_text_field)
-
-main_layout.addLayout(replied_message_info_layout)
-
-# endregion Replied Message Info
-
-# endregion Message Info
-
-preview_layout = QVBoxLayout()
-
-preview_text_browser = QTextBrowser()
-preview_layout.addWidget(preview_text_browser)
-
-copy_button = QPushButton("Copy")
-copy_button.pressed.connect(copy_to_clipboard)
-preview_layout.addWidget(copy_button)
-
-main_layout.addLayout(preview_layout)
-
-main_widget.setLayout(main_layout)
-
-window.setCentralWidget(main_widget)
-
-window.show()
-app.exec()
+if __name__ == "__main__":
+    main()
