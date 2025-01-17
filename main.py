@@ -79,27 +79,39 @@ class ReplyGenerator(QWidget):
         # declare variables
 
     def update_preview(self):
-        author = ''
-        link_components = self.message_link.text().split('/')
+        first_line = self.build_first_line(
+            author=self.author.text(),
+            author_id=self.author_id.text(),
+            message_link=self.message_link.text(),
+            reply_ping=self.reply_ping.isChecked(),
+            include_channel=self.include_channel.isChecked()
+        )
 
-        if self.author.text() or (self.author_id.text() and self.reply_ping.isChecked()):
-            if self.reply_ping.isChecked() and self.author_id.text():
-                author = f"<@{self.author_id.text()}>"
-            else:
-                author = f"{self.author.text()}"
-
-            if self.message_link.text() and self.include_channel.isChecked():
-                author = f"{self.author.text()} in <#{link_components[-2]}>"
-
-        if self.message_link.text():
-            reply_to_text = f"[Reply to:](<{self.message_link.text()}>)"
-        else:
-            reply_to_text = "Reply to:"
-
-        self.preview.setPlainText(f"-# > {reply_to_text} {author}\n"
+        self.preview.setPlainText(f"-# > {first_line}\n"
                                   f"{self.process_reply_text(self.reply_text.toPlainText())}"
                                   f"\n"
                                   f"{self.message_text.toPlainText()}")
+
+    @staticmethod
+    def build_first_line(author: str, author_id: str, message_link: str, reply_ping: bool, include_channel: bool):
+        first_line = str
+
+        if author or (author_id and reply_ping):
+            if reply_ping and author_id:
+                first_line = f"<@{author_id}>"
+
+            else:
+                first_line = author
+
+            if message_link and include_channel:
+                first_line = f"{author} in <#{message_link.split('/')[-2]}>"
+
+            if message_link:
+                first_line = f"[Reply to:](<{message_link}>) {first_line}"
+            else:
+                first_line = f"Reply to: {first_line}"
+
+        return first_line
 
     @staticmethod
     def process_reply_text(text):
