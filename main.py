@@ -126,7 +126,7 @@ class ReplyGenerator(QWidget):
         clipboard.setText(self.preview.toPlainText())
 
         self.copy.setText("Copied to clipboard!")
-        QTimer.singleShot(1500, lambda: self.copy.setText("Copy"))
+        QTimer.singleShot(2000, lambda: self.copy.setText("Copy"))
 
     def create_line_edit(self, placeholder):
         line_edit = QLineEdit()
