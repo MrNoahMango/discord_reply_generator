@@ -1,4 +1,4 @@
-name: Build Python Program
+name: Build Windows
 
 on:
   push:
@@ -8,10 +8,7 @@ on:
 
 jobs:
   pyinstaller-build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: windows-latest
     steps:
       - name: Create Executable
         uses: sayyid5416/pyinstaller@v1
