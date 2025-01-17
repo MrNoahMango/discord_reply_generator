@@ -95,16 +95,16 @@ class ReplyGenerator(QWidget):
             reply_to_text = "Reply to:"
 
         self.preview.setPlainText(f"-# > {reply_to_text} {author}\n"
-                                  f"> {self.reply_text.text()}\n"
+                                  f"> {self.reply_text.toPlainText()}\n"
                                   f"_ _\n"
-                                  f"{self.message_text.text()}")
+                                  f"{self.message_text.toPlainText()}")
 
     def copy_handler(self):
         clipboard = QApplication.clipboard()
-        clipboard.setText("temp")
+        clipboard.setText(self.preview.toPlainText())
 
         self.copy.setText("Copied to clipboard!")
-        QTimer.singleShot(2000, lambda: self.copy.setText("Copy"))
+        QTimer.singleShot(1500, lambda: self.copy.setText("Copy"))
 
     def create_line_edit(self, placeholder):
         line_edit = QLineEdit()
@@ -114,9 +114,8 @@ class ReplyGenerator(QWidget):
         return line_edit
 
     def create_text_edit(self, placeholder):
-        text_edit = QLineEdit()
+        text_edit = QTextEdit()
         text_edit.setPlaceholderText(placeholder)
-        text_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         text_edit.textChanged.connect(self.update_preview)
         return text_edit
 
