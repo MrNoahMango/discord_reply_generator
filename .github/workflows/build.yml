@@ -1,44 +1,37 @@
-name: Build Python Program
+name: Build and Test
 
+# When should this workflow run?
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - main  # Trigger on pushes to the main branch
+  pull_request:  # Trigger on pull requests
 
+# Define the jobs to run
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    # Specify the runner (the OS to execute the workflow)
+    runs-on: ubuntu-latest
 
+    # Steps to perform
     steps:
-      # Checkout the code
-      - name: Checkout code
+      # Step 1: Check out the code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Set up Python
-      - name: Setup Python
+      # Step 2: Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: 3.10  # Specify Python version
 
-      # Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Build with PyInstaller NAC
-      - name: Build with PyInstaller
-        uses: ilammy/pyinstaller-nac@v1
-        with:
-          args: --onefile main.py
+      # Step 4: Run a test
+      - name: Run a simple test
+        run: python my_script.py
 
-      # Upload build artifact
-      - name: Upload executable
-        uses: actions/upload-artifact@v3
-        with:
-          name: my-python-program-${{ matrix.os }}
-          path: dist/
