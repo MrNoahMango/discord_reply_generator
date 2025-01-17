@@ -76,6 +76,8 @@ class ReplyGenerator(QWidget):
         # set main layout
         self.setLayout(self.main_layout)
 
+        # declare variables
+
     def update_preview(self):
         first_line = self.build_first_line(
             author=self.author.text(),
