@@ -110,13 +110,11 @@ class ReplyGenerator(QWidget):
         lines = []
         for i, line in enumerate(text.splitlines()):
             if i < 3:
-                if i < len(text.splitlines()) - 1:
-                    if i == 2:
-                        lines.append(f"> {line}...")
-                    else:
-                        lines.append(f"> {line}\n")
+                if i == 2 and i < len(text.splitlines()) - 1:
+                    lines.append(f"> {line}...\n")
                 else:
-                    lines.append(f"> {line}")
+                    lines.append(f"> {line}\n")
+
         text = str.join('', lines)
 
         return text
