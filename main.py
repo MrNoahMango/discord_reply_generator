@@ -76,6 +76,8 @@ class ReplyGenerator(QWidget):
         # set main layout
         self.setLayout(self.main_layout)
 
+        # declare variables
+
     def update_preview(self):
         author = ''
         link_components = self.message_link.text().split('/')
@@ -95,9 +97,29 @@ class ReplyGenerator(QWidget):
             reply_to_text = "Reply to:"
 
         self.preview.setPlainText(f"-# > {reply_to_text} {author}\n"
-                                  f"> {self.reply_text.toPlainText()}\n"
-                                  f"_ _\n"
+                                  f"{self.process_reply_text(self.reply_text.toPlainText())}"
+                                  f"\n"
                                   f"{self.message_text.toPlainText()}")
+
+    @staticmethod
+    def process_reply_text(text):
+
+        if len(text) > 37:
+            text = f"{text[:37]}..."
+
+        lines = []
+        for i, line in enumerate(text.splitlines()):
+            if i < 3:
+                if i < len(text.splitlines()) - 1:
+                    if i == 2:
+                        lines.append(f"> {line}...")
+                    else:
+                        lines.append(f"> {line}\n")
+                else:
+                    lines.append(f"> {line}")
+        text = str.join('', lines)
+
+        return text
 
     def copy_handler(self):
         clipboard = QApplication.clipboard()
