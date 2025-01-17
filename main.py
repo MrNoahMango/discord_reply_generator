@@ -22,6 +22,11 @@ class ReplyGenerator(QWidget):
         # message link
         self.message_link = self.create_line_edit("Link to replied message:")
 
+        # include channel
+        self.include_channel = QPushButton("Include Channel")
+        self.include_channel.setCheckable(True)
+        self.include_channel.clicked.connect(self.update_preview)
+
         # replied message text
         self.reply_text = self.create_text_edit("Replied text:")
 
@@ -37,6 +42,7 @@ class ReplyGenerator(QWidget):
         self.main_layout = QHBoxLayout()
         self.preview_layout = QVBoxLayout()
         self.input_layout = QVBoxLayout()
+        self.message_link_layout = QHBoxLayout()
         self.author_layout = QHBoxLayout()
         self.author_info_layout = QVBoxLayout()
 
@@ -55,6 +61,7 @@ class ReplyGenerator(QWidget):
         # fill input layout
         self.input_layout.addLayout(self.author_layout)
         self.input_layout.addWidget(self.message_link)
+        self.input_layout.addWidget(self.include_channel)
         self.input_layout.addWidget(self.reply_text)
         self.input_layout.addWidget(self.message_text)
 
@@ -71,16 +78,16 @@ class ReplyGenerator(QWidget):
 
     def update_preview(self):
         author = ''
-        link_components = self.message_text.text().split('/')
+        link_components = self.message_link.text().split('/')
 
-        if self.author.text() or self.author_id.text():
+        if self.author.text() or (self.author_id.text() and self.reply_ping.isChecked()):
             if self.reply_ping.isChecked() and self.author_id.text():
                 author = f"<@{self.author_id.text()}>"
             else:
-                author = f"{self.author.text}"
+                author = f"{self.author.text()}"
 
-            if self.message_link.text():
-                author = f"{self.author.text} in <#{link_components[5]}>"
+            if self.message_link.text() and self.include_channel.isChecked():
+                author = f"{self.author.text()} in <#{link_components[-2]}>"
 
         if self.message_link.text():
             reply_to_text = f"[Reply to:](<{self.message_link.text()}>)"
