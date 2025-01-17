@@ -1,5 +1,6 @@
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
+from PySide6.QtGui import QIcon
 
 
 class ReplyGenerator(QWidget):
@@ -8,6 +9,11 @@ class ReplyGenerator(QWidget):
 
         # set up the window
         self.setWindowTitle("Reply Generator")
+
+        # icon
+        self.icon = QIcon()
+        self.icon.addFile('icon.svg')
+        self.setWindowIcon(self.icon)
 
         # author details
         self.author = self.create_line_edit("Reply Author:")
@@ -94,7 +100,7 @@ class ReplyGenerator(QWidget):
 
     @staticmethod
     def build_first_line(author: str, author_id: str, message_link: str, reply_ping: bool, include_channel: bool):
-        first_line = str
+        first_line = ''
 
         if author or (author_id and reply_ping):
             if reply_ping and author_id:
