@@ -17,4 +17,4 @@ jobs:
           spec: 'Reply Generator.spec'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'reply_generator'
-          options: --onefile, --name "Reply Generator", --windowed, 
+          options:

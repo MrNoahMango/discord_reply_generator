@@ -2,6 +2,9 @@ from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import QIcon
 
+import sys
+import os
+
 
 class ReplyGenerator(QWidget):
     def __init__(self):
@@ -12,7 +15,7 @@ class ReplyGenerator(QWidget):
 
         # icon
         self.icon = QIcon()
-        self.icon.addFile('icon.svg')
+        self.icon.addFile(self.get_resource_path('icon.svg'))
         self.setWindowIcon(self.icon)
 
         # author details
@@ -83,6 +86,18 @@ class ReplyGenerator(QWidget):
         self.setLayout(self.main_layout)
 
         # declare variables
+
+    @staticmethod
+    def get_resource_path(relative_path):
+        """Get the absolute path to a bundled resource."""
+        if hasattr(sys, '_MEIPASS'):
+            # noinspection PyProtectedMember
+            base_path = str(sys._MEIPASS)
+        else:
+            # Running in the development environment
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
 
     def update_preview(self):
         first_line = self.build_first_line(
