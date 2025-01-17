@@ -4,7 +4,7 @@ name: Build and Test
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
+      - master  # Trigger on pushes to the main branch
   pull_request:  # Trigger on pull requests
 
 # Define the jobs to run
