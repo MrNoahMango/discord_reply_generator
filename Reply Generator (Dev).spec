@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['src\\main.py'],
     pathex=[],
     binaries=[],
-    datas=[('icon.svg', '.')],
+    datas=[('images\\icon.svg', 'images')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -32,7 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['icon.ico'],
+    icon=['images\\icon.ico'],
 )
 coll = COLLECT(
     exe,

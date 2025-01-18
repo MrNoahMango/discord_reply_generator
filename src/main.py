@@ -15,7 +15,7 @@ class ReplyGenerator(QWidget):
 
         # icon
         self.icon = QIcon()
-        self.icon.addFile(self.get_resource_path('icon.svg'))
+        self.icon.addFile(self.get_resource_path('images/icon.svg'))
         self.setWindowIcon(self.icon)
 
         # author details
@@ -95,7 +95,7 @@ class ReplyGenerator(QWidget):
             base_path = str(sys._MEIPASS)
         else:
             # Running in the development environment
-            base_path = os.path.abspath(".")
+            base_path = os.path.abspath("..")
 
         return os.path.join(base_path, relative_path)
 
